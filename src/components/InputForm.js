@@ -2,11 +2,16 @@ import React, { useEffect, useState } from 'react'
 import {FaChevronDown} from 'react-icons/fa'
 import TodoList from './TodoList'
 import ErrMsg from './Message/ErrMsg'
+import SuccessMsg from './Message/SuccessMsg'
 
 const InputForm = () => {
     const  [todoValue, setTodoValue] = useState("")
     const [errMsg, setErrMsg] =useState("")
     const [showErr, setShowErr] = useState(false)
+    const [category, setCategory] = useState("")
+    const [currentTodo, setCurrentTodo] = useState("")
+    const [successMsg, setSuccessMsg] = useState("")
+    const [showSuccess,setShowSuccess] = useState ("false")
     const options = [
         {
             _id: 1000,
@@ -34,19 +39,34 @@ const InputForm = () => {
         if (todoValue === ""){
             setErrMsg("Please add your todo")
             setShowErr(true)
+            setShowSuccess(false)
             // console.log(ErrMsg)
-        }else{
+        }else if(category === ""){
+            setErrMsg("Select a category")
+            setShowErr(true)
+            setShowSuccess(false)
+        }else if(category === "categories"){
+            setErrMsg("select a valid category")
+            setShowErr(true)
+            setShowSuccess(false)
+        }
+        else{
             // console.log(todoValue)
+            setCurrentTodo(todoValue)
             setTodoValue("")
+            setShowSuccess(true)
+            setShowErr(false)
+            setSuccessMsg("Todo added successfully")
         }
     }
 
     useEffect (()=>{
         const timer = setTimeout(()=>{
             showErr && setShowErr(false)
+            showSuccess && setShowSuccess(false)
         },2000)
         return ()=>clearTimeout(timer)
-    },[showErr])
+    },[showErr, showSuccess])
   return (
     <div className='w-full bg-slate-900 gap-4 flex flex-col'>
         <div className='flex flex-row h-12 gap-4'>
@@ -56,7 +76,7 @@ const InputForm = () => {
             />
 
             <div className='w-[20%] h-full relative'>
-                <select className='bg-slate-900 h-full w-full text-center capitalize outline-none cursor-pointer appearance-none rounded-md border-[1px] border-gray-400 focus-visible:border-orange-600 hover:border-white px-1'>
+                <select onChange={(e) =>setCategory(e.target.value)} className='bg-slate-900 h-full w-full text-center capitalize outline-none cursor-pointer appearance-none rounded-md border-[1px] border-gray-400 focus-visible:border-orange-600 hover:border-white px-1'>
                     {
                         options.map((item)=>(
                             <option key={item._id}>{item.title}</option>
@@ -74,11 +94,15 @@ const InputForm = () => {
 
         <div className='flex flex-col gap-4'>
             <ul className='grid grid-cols-1 gap-4 border border-gray-600 shadow-blue-600 shadow-md  p-4 mt-6'>
-                <TodoList/>
+                <TodoList todoValue={currentTodo}/>
             </ul>
         </div>
         {
             showErr && <ErrMsg errMsg={errMsg}/>
+        }
+
+        {
+            showSuccess && <SuccessMsg successMsg = {successMsg}/>
         }
     </div>
   )
