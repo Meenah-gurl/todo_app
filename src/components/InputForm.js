@@ -3,8 +3,11 @@ import {FaChevronDown} from 'react-icons/fa'
 import TodoList from './TodoList'
 import ErrMsg from './Message/ErrMsg'
 import SuccessMsg from './Message/SuccessMsg'
+import { useDispatch } from 'react-redux'
+import { addTodos } from '../reduxStore/TodoSlice'
 
 const InputForm = () => {
+    const dispatch = useDispatch
     const  [todoValue, setTodoValue] = useState("")
     const [errMsg, setErrMsg] =useState("")
     const [showErr, setShowErr] = useState(false)
@@ -51,6 +54,14 @@ const InputForm = () => {
             setShowSuccess(false)
         }
         else{
+            dispatch(
+                addTodos({
+                    _id:Math.random(),
+                    todo:todoValue,
+                    category:category
+
+                })
+            )
             // console.log(todoValue)
             setCurrentTodo(todoValue)
             setTodoValue("")
