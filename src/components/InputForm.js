@@ -3,11 +3,13 @@ import {FaChevronDown} from 'react-icons/fa'
 import TodoList from './TodoList'
 import ErrMsg from './Message/ErrMsg'
 import SuccessMsg from './Message/SuccessMsg'
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { addTodos } from '../reduxStore/TodoSlice'
+import { type } from '@testing-library/user-event/dist/type'
 
 const InputForm = () => {
-    const dispatch = useDispatch
+    const dispatch = useDispatch()
+    const todos = useSelector(state => state.todos)
     const  [todoValue, setTodoValue] = useState("")
     const [errMsg, setErrMsg] =useState("")
     const [showErr, setShowErr] = useState(false)
@@ -15,6 +17,9 @@ const InputForm = () => {
     const [currentTodo, setCurrentTodo] = useState("")
     const [successMsg, setSuccessMsg] = useState("")
     const [showSuccess,setShowSuccess] = useState ("false")
+    const todosList = todos.todos.map((ele,i) => (
+        <TodoList key={i} todoValue={ele}/>
+    ))
     const options = [
         {
             _id: 1000,
@@ -55,19 +60,22 @@ const InputForm = () => {
         }
         else{
             dispatch(
-                addTodos({
+                {
+                    type:"ADD_TODO",payload : {
                     _id:Math.random(),
                     todo:todoValue,
-                    category:category
+                    category
 
-                })
+                }
+                }
             )
             // console.log(todoValue)
             setCurrentTodo(todoValue)
             setTodoValue("")
+            setSuccessMsg("Todo added successfully")
             setShowSuccess(true)
             setShowErr(false)
-            setSuccessMsg("Todo added successfully")
+           
         }
     }
 
@@ -104,8 +112,8 @@ const InputForm = () => {
         </button>
 
         <div className='flex flex-col gap-4'>
-            <ul className='grid grid-cols-1 gap-4 border border-gray-600 shadow-blue-600 shadow-md  p-4 mt-6'>
-                <TodoList todoValue={currentTodo}/>
+            <ul className='grid divide-y max-h-[200px] overflow-y-auto grid-cols-1 gap-4 border border-gray-600 shadow-blue-600 shadow-md  p-4 mt-6'>
+                {todosList}
             </ul>
         </div>
         {
